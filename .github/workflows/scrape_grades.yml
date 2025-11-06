@@ -40,8 +40,9 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        PYTHONUNBUFFERED: 1
       run: |
-        python sync_eligible_products.py
+        python -u sync_eligible_products.py
 
   # Job 2: Scrape batch 1 (runs after sync)
   scrape-batch-1:
@@ -74,15 +75,17 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        PYTHONUNBUFFERED: 1
       run: |
         # Run for ~3.8 hours with 2 second delay between requests
         # This processes all 6,768 products in one batch
-        timeout 19800s python process_db.py --batch-size 100 --delay 2.0 || true
+        timeout 19800s python -u process_db.py --batch-size 100 --delay 2.0 || true
 
     - name: Show final summary
       if: always()
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        PYTHONUNBUFFERED: 1
       run: |
-        python check_progress.py
+        python -u check_progress.py
